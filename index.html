@@ -883,12 +883,12 @@
 
                     <div class="form-group">
                         <label for="alergias" data-es="Alergias o restricciones dietéticas" data-ca="Al·lèrgies o restriccions dietètiques">Alergias o restricciones dietéticas</label>
-                        <textarea id="alergias" name="alergias" data-es-placeholder="Cuéntanos si tienes alguna restricción..." data-ca-placeholder="Explica'ns si tens alguna restricció..." placeholder="Cuéntanos si tienes alguna restricción..."></textarea>
+                        <textarea id="alergias" name="alergias" autocomplete="off" data-es-placeholder="Cuéntanos si tienes alguna restricción..." data-ca-placeholder="Explica'ns si tens alguna restricció..." placeholder="Cuéntanos si tienes alguna restricción..."></textarea>
                     </div>
 
                     <div class="form-group">
                         <label for="mensaje" data-es="Mensaje para los novios" data-ca="Missatge per als nuvis">Mensaje para los novios</label>
-                        <textarea id="mensaje" name="mensaje" data-es-placeholder="Déjanos un mensaje especial..." data-ca-placeholder="Deixa'ns un missatge especial..." placeholder="Déjanos un mensaje especial..."></textarea>
+                        <textarea id="mensaje" name="mensaje" autocomplete="off" data-es-placeholder="Déjanos un mensaje especial..." data-ca-placeholder="Deixa'ns un missatge especial..." placeholder="Déjanos un mensaje especial..."></textarea>
                     </div>
 
                     <button type="submit" class="submit-btn" data-es="Confirmar Asistencia" data-ca="Confirmar Assistència">Confirmar Asistencia</button>
@@ -1202,7 +1202,7 @@
                 successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
                 // Enviar a Google Sheets
-                const scriptUrl = 'https://script.google.com/macros/s/AKfycbwF2wxnR65ciyEwvpYNBiMmn41Bl-wHsCFEuAMu8N_YzYhPhVwn-xOhvvWpMcC9gCffVA/exec';
+                const scriptUrl = 'https://script.google.com/macros/s/AKfycbxi0mddbppbCXGjnC3EGr-s2bTJCYLlpYycGsPWV6t17mKWvtUbrnn6M5rfnNdBUVlS-Q/exec';
 
                 const data = {
                     'nombre': nombre,
@@ -1224,13 +1224,15 @@
                 // Enviar con fetch
                 fetch(scriptUrl, {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    mode: 'no-cors'
+                })
+                .then(response => {
+                    console.log('Datos enviados a Google Sheets correctamente');
                 })
                 .catch(error => {
-                    console.log('Solicitud enviada');
+                    console.error('Error al enviar:', error);
                 });
-
-                console.log('Datos enviados a Google Sheets');
 
                 // Reset después de 2 segundos
                 setTimeout(() => {
