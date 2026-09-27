@@ -765,8 +765,10 @@
     <section id="detalles">
         <div class="container">
             <h2 data-es="Detalles de la Boda" data-ca="Detalls del casament">Detalles de la Boda</h2>
-            <div style="position: relative; width: 100%; margin: 50px auto; background-color: var(--cream); padding: 0; border-radius: 8px; overflow: hidden;">
-                <img src="timeline.jpg" alt="Timeline" style="width: 100%; height: auto; display: block; background-color: var(--cream);">
+            <div style="position: relative; width: 100%; margin: 50px auto; background-color: var(--light-beige); padding: 40px; border-radius: 8px; overflow: hidden; text-align: center; color: var(--taupe);">
+                <!-- Reemplaza con tu imagen de timeline: timeline.jpg -->
+                <p style="margin: 0;">Aquí va el timeline de la boda</p>
+                <!-- <img src="timeline.jpg" alt="Timeline" style="width: 100%; height: auto; display: block;"> -->
             </div>
         </div>
     </section>
@@ -820,17 +822,17 @@
                 <form id="rsvpForm">
                     <div class="form-group">
                         <label for="nombre" data-es="Nombre *" data-ca="Nom *">Nombre *</label>
-                        <input type="text" id="nombre" name="nombre" required>
+                        <input type="text" id="nombre" name="nombre" autocomplete="name" required>
                     </div>
 
                     <div class="form-group">
                         <label for="email" data-es="Email *" data-ca="Email *">Email *</label>
-                        <input type="email" id="email" name="email" required>
+                        <input type="email" id="email" name="email" autocomplete="email" required>
                     </div>
 
                     <div class="form-group">
-                        <label data-es="¿Asistirás? *" data-ca="¿Assistirás? *">¿Asistirás? *</label>
-                        <div class="radio-group">
+                        <label id="asistencia-label" data-es="¿Asistirás? *" data-ca="¿Assistirás? *">¿Asistirás? *</label>
+                        <div class="radio-group" role="group" aria-labelledby="asistencia-label">
                             <label>
                                 <input type="radio" name="asistencia" value="si" required>
                                 <span data-es="¡Por supuesto!" data-ca="¡Per descomptat!">¡Por supuesto!</span>
@@ -843,8 +845,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label data-es="¿Acompañantes? *" data-ca="¿Acompanyants? *">¿Acompañantes? *</label>
-                        <div class="radio-group">
+                        <label id="acompanantes-label" data-es="¿Acompañantes? *" data-ca="¿Acompanyants? *">¿Acompañantes? *</label>
+                        <div class="radio-group" role="group" aria-labelledby="acompanantes-label">
                             <label>
                                 <input type="radio" name="acompanantes" value="1" required>
                                 <span data-es="Solo yo" data-ca="Només jo">Solo yo</span>
@@ -858,12 +860,12 @@
 
                     <div class="form-group" id="companion-name-group" style="display: none;">
                         <label for="companion-name" data-es="Nombre del acompañante *" data-ca="Nom de l'acompanyant *">Nombre del acompañante *</label>
-                        <input type="text" id="companion-name" name="companion-name" data-es-placeholder="Nombre del acompañante" data-ca-placeholder="Nom de l'acompanyant" placeholder="Nombre del acompañante">
+                        <input type="text" id="companion-name" name="companion-name" autocomplete="name" data-es-placeholder="Nombre del acompañante" data-ca-placeholder="Nom de l'acompanyant" placeholder="Nombre del acompañante">
                     </div>
 
                     <div class="form-group">
-                        <label data-es="¿Cómo vendrás? *" data-ca="¿Com vindràs? *">¿Cómo vendrás? *</label>
-                        <div class="radio-group">
+                        <label id="transporte-label" data-es="¿Cómo vendrás? *" data-ca="¿Com vindràs? *">¿Cómo vendrás? *</label>
+                        <div class="radio-group" role="group" aria-labelledby="transporte-label">
                             <label>
                                 <input type="radio" name="transporte" value="bus" required>
                                 <span data-es="En autobús" data-ca="En autobús">En autobús</span>
