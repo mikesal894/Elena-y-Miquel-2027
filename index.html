@@ -170,6 +170,27 @@
             letter-spacing: 2px;
         }
 
+        /* COUPLE PHOTO */
+        .couple-photo-container {
+            margin: 40px 0 50px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .couple-photo {
+            max-width: 400px;
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(61, 40, 23, 0.15);
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .couple-photo:hover {
+            transform: scale(1.02);
+        }
+
         /* COUNTDOWN */
         .countdown-container {
             display: flex;
@@ -644,6 +665,14 @@
                 font-size: 48px;
             }
 
+            .couple-photo-container {
+                margin: 30px 0 40px 0;
+            }
+
+            .couple-photo {
+                max-width: 280px;
+            }
+
             section h2 {
                 font-size: 36px;
             }
@@ -730,6 +759,9 @@
     <section id="inicio" class="hero">
         <div class="container">
             <h1><span>Elena</span><span class="ampersand">&</span><span>Miquel</span></h1>
+            <div class="couple-photo-container">
+                <img src="couple-photo.jpg" alt="Elena y Miquel" class="couple-photo">
+            </div>
             <p>30 de octubre de 2027</p>
             <p style="font-size: 16px; margin-bottom: 30px;" data-es="Finca Buenavista, Murcia" data-ca="Finca Buenavista, Múrcia">Finca Buenavista, Murcia</p>
 
@@ -926,21 +958,11 @@
         </div>
     </section>
 
-    <!-- FOTOS Y MÚSICA -->
+    <!-- MÚSICA -->
     <section id="fotos">
         <div class="container">
-            <h2 data-es="Fotos & Música" data-ca="Fotos & Música">Fotos & Música</h2>
-            <div class="fotos-musica-grid">
-                <div class="fotos-column">
-                    <h3 data-es="📸 Comparte tus Fotos" data-ca="📸 Comparteix les teves Fotos">📸 Comparte tus Fotos</h3>
-                    <p data-es="Queremos que disfrutes del momento, pero también que compartas tus fotos con nosotros. Escanea este código QR para subir tus mejores capturas a nuestro álbum compartido." data-ca="Volem que gaudeixis del moment, però també que comparteixis les teves fotos amb nosaltres. Escaneja aquest codi QR per carregar les teves millors captures al nostre àlbum compartit.">Queremos que disfrutes del momento, pero también que compartas tus fotos con nosotros. Escanea este código QR para subir tus mejores capturas a nuestro álbum compartido.</p>
-                    <div class="qr-container">
-                        <div class="qr-placeholder" data-es="Escanea este código&#10;para subir fotos&#10;&#10;(Reemplaza con tu QR real)" data-ca="Escaneja aquest codi&#10;per carregar fotos&#10;&#10;(Reemplaça amb el teu QR real)">Escanea este código<br>para subir fotos<br><br>(Reemplaza con tu QR real)</div>
-                    </div>
-                    <p style="margin-top: 20px; font-size: 14px;">
-                        <span data-es="También puedes usar el hashtag:" data-ca="También puedes usar el hashtag:">También puedes usar el hashtag:</span> <strong>#ElenaMiquel2027</strong>
-                    </p>
-                </div>
+            <h2 data-es="Nuestra Música" data-ca="La nostra Música">Nuestra Música</h2>
+            <div style="max-width: 600px; margin: 0 auto;">
                 <div class="musica-column">
                     <h3 data-es="🎵 Nuestra Playlist" data-ca="🎵 La nostra Playlist">🎵 Nuestra Playlist</h3>
                     <div class="spotify-container">
@@ -949,7 +971,7 @@
                                 <strong data-es="¿Tienes una canción favorita que quieras que suene en nuestra boda?" data-ca="¿Tens una cançó favorita que vulguis que soni a la nostra boda?">¿Tienes una canción favorita que quieras que suene en nuestra boda?</strong>
                             </p>
                             <p style="margin-bottom: 20px;" data-es="Hemos creado una playlist colaborativa en Spotify. ¡Añade tus canciones favoritas para que suenen durante la recepción!" data-ca="Hem creat una playlist col·laborativa a Spotify. Afegeix les teves cançons favorites perquè sonen durant la recepció!">Hemos creado una playlist colaborativa en Spotify. ¡Añade tus canciones favoritas para que suenen durante la recepción!</p>
-                            <a href="https://open.spotify.com" class="spotify-btn" target="_blank" data-es="Acceder a Spotify" data-ca="Accedir a Spotify">Acceder a Spotify</a>
+                            <a href="https://open.spotify.com/playlist/00mRfWe4uqDYFgiif0drNe?si=L6HPFHq_TGeT8izXUcX0Qw" class="spotify-btn" target="_blank" data-es="Acceder a Spotify" data-ca="Accedir a Spotify">Acceder a Spotify</a>
                         </div>
                         <p style="color: var(--taupe); font-size: 13px; margin-top: 15px;">
                             <em data-es="La playlist se actualizará hasta una semana antes de la boda" data-ca="La playlist s'actualitzarà fins una setmana abans de la boda">La playlist se actualizará hasta una semana antes de la boda</em>
