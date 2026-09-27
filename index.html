@@ -1202,7 +1202,7 @@
                 successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
                 // Enviar a Google Sheets
-                const scriptUrl = 'https://script.google.com/macros/s/AKfycbxi0mddbppbCXGjnC3EGr-s2bTJCYLlpYycGsPWV6t17mKWvtUbrnn6M5rfnNdBUVlS-Q/exec';
+                const scriptUrl = 'https://script.google.com/macros/s/AKfycbysEKrurTMqOVNYrzgMik6PPEJpd6_QPLJID0cXxmxQ-dRCrKck1q-HMog3QwPAnY_I/exec';
 
                 const data = {
                     'nombre': nombre,
@@ -1215,23 +1215,23 @@
                     'mensaje': mensaje
                 };
 
-                // Crear FormData
-                const formData = new FormData();
+                // Crear string de parámetros (format URL)
+                const params = new URLSearchParams();
                 for (let key in data) {
-                    formData.append(key, data[key]);
+                    params.append(key, data[key]);
                 }
 
                 // Enviar con fetch
                 fetch(scriptUrl, {
                     method: 'POST',
-                    body: formData,
+                    body: params,
                     mode: 'no-cors'
                 })
                 .then(response => {
-                    console.log('Datos enviados a Google Sheets correctamente');
+                    console.log('Datos enviados a Google Sheets');
                 })
                 .catch(error => {
-                    console.error('Error al enviar:', error);
+                    console.log('Solicitud enviada (CORS no-cors)');
                 });
 
                 // Reset después de 2 segundos
