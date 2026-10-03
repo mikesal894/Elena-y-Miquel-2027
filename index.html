@@ -646,6 +646,14 @@
             border-bottom: none;
         }
 
+        /* TIMELINE MARCO */
+        .timeline-marco {
+            border: 3px solid var(--primary-gold);
+            box-shadow: inset 0 0 0 3px var(--cream),
+                        0 0 0 6px var(--dark-green),
+                        0 8px 24px rgba(61, 40, 23, 0.2);
+        }
+
         /* RESPONSIVE */
         @media (max-width: 900px) {
 
@@ -781,8 +789,8 @@
         <div class="container">
             <h2 data-es="Cronograma" data-ca="Cronograma">Cronograma</h2>
         </div>
-        <div style="width: 100%; margin: 50px 0; text-align: center; overflow: hidden;">
-            <img src="timeline.png" alt="Timeline de la boda" style="width: 100%; height: auto; display: block; max-width: none;">
+        <div style="width: 100%; margin: 50px 0; text-align: center; overflow: visible;">
+            <img src="timeline.png" alt="Timeline de la boda" class="timeline-marco" style="width: 100%; height: auto; display: block; max-width: none;">
         </div>
     </section>
 
