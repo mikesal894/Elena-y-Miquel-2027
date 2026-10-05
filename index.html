@@ -837,11 +837,27 @@
         .modal-body {
             flex: 1;
             overflow: auto;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9f9f9;
         }
 
         #gameContainer {
             width: 100%;
             height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #gameContainer iframe {
+            width: 100% !important;
+            height: 100% !important;
+            border: none;
+            border-radius: 0 0 10px 10px;
+            display: block;
         }
 
         @media (max-width: 768px) {
@@ -855,8 +871,37 @@
 
             .modal-content {
                 width: 98%;
-                height: 95%;
+                height: 90vh;
                 max-width: none;
+                max-height: none;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            .modal-header h2 {
+                font-size: 18px;
+            }
+
+            #closeGameBtn {
+                width: 36px;
+                height: 36px;
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 99%;
+                height: 92vh;
+            }
+
+            .modal-header {
+                padding: 12px 15px;
+            }
+
+            .modal-header h2 {
+                font-size: 16px;
             }
         }
     </style>
@@ -1426,12 +1471,15 @@
         // Cargar el juego (será un iframe o contenedor)
         floatingGameBtn.addEventListener('click', function() {
             gameModal.style.display = 'block';
-            
+            document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+
             // Si el contenedor está vacío, cargar el juego
             if (gameContainer.innerHTML === '') {
                 // Crear iframe para el juego
                 const iframe = document.createElement('iframe');
                 iframe.src = 'super-mario-boda-ultimate-2.html';
+                iframe.setAttribute('frameborder', '0');
+                iframe.setAttribute('scrolling', 'no');
                 iframe.style.width = '100%';
                 iframe.style.height = '100%';
                 iframe.style.border = 'none';
@@ -1442,12 +1490,14 @@
 
         closeGameBtn.addEventListener('click', function() {
             gameModal.style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restore scrolling
         });
 
         // Cerrar modal al hacer clic fuera
         gameModal.addEventListener('click', function(e) {
             if (e.target === gameModal) {
                 gameModal.style.display = 'none';
+                document.body.style.overflow = 'auto'; // Restore scrolling
             }
         });
 
@@ -1455,6 +1505,7 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && gameModal.style.display === 'block') {
                 gameModal.style.display = 'none';
+                document.body.style.overflow = 'auto'; // Restore scrolling
             }
         });
     </script>
