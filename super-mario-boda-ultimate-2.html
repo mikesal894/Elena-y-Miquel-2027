@@ -11,10 +11,12 @@
             box-sizing: border-box;
         }
 
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
             width: 100%;
             height: 100%;
             margin: 0;
@@ -22,10 +24,13 @@
             background: #87CEEB;
             font-family: 'Arial', sans-serif;
             overflow: hidden;
+            display: block;
         }
 
         #gameContainer {
-            position: relative;
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             background: #87CEEB;
@@ -70,14 +75,15 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 1);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 10000;
             color: white;
             font-family: 'Arial Black', sans-serif;
+            pointer-events: auto;
         }
 
         #startScreen {
@@ -128,6 +134,9 @@
             margin-top: 30px;
             border-radius: 5px;
             transition: transform 0.1s;
+            pointer-events: auto;
+            z-index: 10001;
+            position: relative;
         }
 
         .screen-button:hover {
@@ -149,6 +158,9 @@
             background: rgba(255, 255, 255, 0.9);
             color: #000;
             font-weight: bold;
+            pointer-events: auto;
+            z-index: 10001;
+            position: relative;
         }
 
         .leaderboard {
@@ -189,7 +201,7 @@
 
         <div id="startScreen">
             <div class="screen-title">¡Ayúdanos a llegar al altar!</div>
-            <div class="screen-subtitle">Super Mario Boda</div>
+            <div class="screen-text" style="font-size: 20px; margin-bottom: 40px; opacity: 0.8;">Super Mario Boda</div>
             <div class="screen-text">Junto a Elena y Miquel</div>
             <input type="text" id="playerNameInput" placeholder="¿Cuál es tu nombre?" maxlength="15">
             <div class="screen-text">🕹️ Toca la pantalla para saltar</div>
@@ -518,6 +530,7 @@
             loadLevel(currentLevel - 1);
             gameState = STATE.LEVEL_INTRO;
             showLevelIntro();
+            gameLoop();
         }
 
         function goToStart() {
@@ -527,6 +540,7 @@
             gameState = STATE.START;
             score = 0;
             lives = 3;
+            gameLoop();
         }
 
         function showGameOver() {
@@ -546,6 +560,9 @@
 
             gameState = STATE.WIN;
             document.getElementById('winScreen').style.display = 'flex';
+
+            // Crear fuegos artificiales para celebrar
+            createFireworks();
 
             const leaderboard = getLeaderboard();
             const playerRank = leaderboard.findIndex(entry => entry.name === playerName && entry.score === finalScore) + 1;
@@ -733,10 +750,26 @@
             camera.x += (camera.targetX - camera.x) * 0.1;
             camera.y += (camera.targetY - camera.y) * 0.1;
 
+            // Detectar si el jugador llegó al castillo
+            let reachedCastle = false;
+
             if (boss && boss.health <= 0 && player.x > currentLevelData.castle.x - 100) {
-                showLevelComplete();
+                reachedCastle = true;
             } else if (!boss && player.x > currentLevelData.castle.x) {
-                showLevelComplete();
+                reachedCastle = true;
+            }
+
+            // Para el nivel 3, solo necesita llegar al castillo
+            if (currentLevel === 3 && player.x > currentLevelData.castle.x - 50) {
+                reachedCastle = true;
+            }
+
+            if (reachedCastle) {
+                if (currentLevel === 3) {
+                    showFinalWin();
+                } else {
+                    showLevelComplete();
+                }
             }
 
             if (player.y > canvas.height + 100) {
@@ -752,6 +785,34 @@
         }
 
         function draw() {
+            // Si el juego terminó, solo dibujar fuegos artificiales
+            if (gameState === STATE.WIN || gameState === STATE.GAME_OVER) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Dibujar fuegos artificiales
+                for (let i = fireworks.length - 1; i >= 0; i--) {
+                    let fw = fireworks[i];
+                    fw.x += fw.velocityX;
+                    fw.y += fw.velocityY;
+                    fw.velocityY += 0.2;
+                    fw.life--;
+
+                    ctx.fillStyle = fw.color;
+                    ctx.globalAlpha = fw.life / fw.maxLife;
+                    ctx.beginPath();
+                    ctx.arc(fw.x, fw.y, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+
+                    if (fw.life <= 0) {
+                        fireworks.splice(i, 1);
+                    }
+                }
+                updateUI();
+                return;
+            }
+
             ctx.fillStyle = '#87CEEB';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -1137,7 +1198,11 @@
         function gameLoop() {
             update();
             draw();
-            requestAnimationFrame(gameLoop);
+
+            // Continuar el loop a menos que haya terminado, salvo si hay fuegos artificiales
+            if (gameState !== STATE.WIN && gameState !== STATE.GAME_OVER || fireworks.length > 0) {
+                requestAnimationFrame(gameLoop);
+            }
         }
 
         loadLevel(0);
