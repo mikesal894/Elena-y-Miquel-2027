@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elena & Miquel - Super Mario Boda Ultimate</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width: 1200px;
+            max-height: 800px;
+            background: #87CEEB;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 2px 2px 0 #0066CC, 4px 4px 0 rgba(0,0,0,0.3);
+            font-family: 'Arial Black', sans-serif;
+            z-index: 100;
+            line-height: 1.8;
+        }
+
+        #level {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 2px 2px 0 #0066CC;
+            z-index: 100;
+        }
+
+        #startScreen, #gameOverScreen, #levelScreen, #winScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+            font-family: 'Arial Black', sans-serif;
+        }
+
+        #startScreen {
+            display: flex;
+        }
+
+        #gameOverScreen {
+            display: none;
+        }
+
+        #levelScreen {
+            display: none;
+        }
+
+        #winScreen {
+            display: none;
+        }
+
+        .screen-title {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #FFD700;
+            text-shadow: 3px 3px 0 #FF0000, 6px 6px 0 rgba(0,0,0,0.5);
+        }
+
+        .screen-subtitle {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: #FFD700;
+        }
+
+        .screen-text {
+            font-size: 18px;
+            margin: 15px 0;
+            color: #FFFFFF;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .screen-button {
+            background: #FFD700;
+            color: #000;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 3px solid #FF0000;
+            cursor: pointer;
+            margin-top: 30px;
+            border-radius: 5px;
+            transition: transform 0.1s;
+        }
+
+        .screen-button:hover {
+            transform: scale(1.1);
+        }
+
+        .screen-button:active {
+            transform: scale(0.95);
+        }
+
+        #playerNameInput {
+            padding: 10px;
+            font-size: 18px;
+            border: 3px solid #FFD700;
+            border-radius: 5px;
+            text-align: center;
+            margin: 15px 0;
+            width: 200px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #000;
+            font-weight: bold;
+        }
+
+        .leaderboard {
+            background: rgba(0, 0, 0, 0.5);
+            border: 3px solid #FFD700;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            max-width: 400px;
+            color: #FFD700;
+            font-family: 'Courier New', monospace;
+            text-align: left;
+        }
+
+        .leaderboard-title {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .leaderboard-entry {
+            font-size: 14px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui">
+            <div>SCORE: <span id="score">0</span></div>
+            <div>ANILLOS: <span id="coins">0</span></div>
+            <div>VIDAS: <span id="lives">3</span></div>
+            <div>TIEMPO: <span id="time">300</span></div>
+        </div>
+        <div id="level">WORLD <span id="levelNum">1</span>-1</div>
+
+        <div id="startScreen">
+            <div class="screen-title">ELENA & MIQUEL</div>
+            <div class="screen-subtitle">Super Mario Boda Ultimate</div>
+            <div class="screen-text">¡Ayuda a Elena y a Miquel a llegar al altar!</div>
+            <input type="text" id="playerNameInput" placeholder="¿Cuál es tu nombre?" maxlength="15">
+            <div class="screen-text">🕹️ Toca la pantalla para saltar</div>
+            <div class="screen-text">➡️ Movimiento automático hacia adelante</div>
+            <div class="screen-text">💍 Recoge anillos y power-ups</div>
+            <div class="screen-text">👾 Evita a los Goombas</div>
+            <button class="screen-button" onclick="startGame()">¡EMPEZAR JUEGO!</button>
+            <button class="screen-button" onclick="showLeaderboard()" style="background: #FF69B4;">🏆 CLASIFICACIÓN</button>
+            <div id="leaderboardDisplay"></div>
+        </div>
+
+        <div id="levelScreen">
+            <div class="screen-title">WORLD <span id="levelScreenNum">1</span>-1</div>
+            <div class="screen-text" id="levelScreenText"></div>
+            <button class="screen-button" onclick="continueLevelCountdown()">¡PREPARADO!</button>
+        </div>
+
+        <div id="gameOverScreen">
+            <div class="screen-title">GAME OVER</div>
+            <div class="screen-text">Se acabaron las vidas...</div>
+            <button class="screen-button" onclick="restartGame()">REINTENTAR</button>
+            <button class="screen-button" onclick="goToStart()">MENÚ INICIO</button>
+        </div>
+
+        <div id="winScreen">
+            <div class="screen-title">¡GANASTE!</div>
+            <div class="screen-text" id="winText"></div>
+            <button class="screen-button" onclick="nextLevel()">SIGUIENTE NIVEL</button>
+            <button class="screen-button" onclick="goToStart()">MENÚ INICIO</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const container = document.getElementById('gameContainer');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const STATE = {
+            START: 'start',
+            LEVEL_INTRO: 'levelIntro',
+            PLAYING: 'playing',
+            GAME_OVER: 'gameOver',
+            WIN: 'win',
+            LEVEL_COMPLETE: 'levelComplete'
+        };
+
+        let gameState = STATE.START;
+        let currentLevel = 1;
+        let score = 0;
+        let collectedCoins = 0;
+        let lives = 3;
+        let totalTime = 300;
+        let timeLeft = 300;
+        let levelStartTime = 0;
+        let playerName = 'Jugador';
+
+        const GRAVITY = 0.65;
+        const JUMP_POWER = 13;
+        const MOVE_SPEED = 3.5;
+        const MAX_FALL_SPEED = 20;
+
+        const player = {
+            x: 50,
+            y: 0,
+            width: 40,
+            height: 48,
+            velocityY: 0,
+            velocityX: MOVE_SPEED,
+            jumping: false,
+            doubleJump: false,
+            invincible: false,
+            invincibleTime: 0,
+            powerUp: null,
+            powerUpTime: 0,
+            animationFrame: 0
+        };
+
+        const camera = {
+            x: 0,
+            y: 0,
+            targetX: 0,
+            targetY: 0,
+            width: canvas.width,
+            height: canvas.height
+        };
+
+        const particles = [];
+        const fireworks = [];
+
+        function getLeaderboard() {
+            const data = localStorage.getItem('marioWeddingLeaderboard');
+            return data ? JSON.parse(data) : [];
+        }
+
+        function saveScore(name, score) {
+            const leaderboard = getLeaderboard();
+            leaderboard.push({name: name, score: score, date: new Date().toLocaleDateString()});
+            leaderboard.sort((a, b) => b.score - a.score);
+            leaderboard.splice(10);
+            localStorage.setItem('marioWeddingLeaderboard', JSON.stringify(leaderboard));
+        }
+
+        function showLeaderboard() {
+            const leaderboard = getLeaderboard();
+            let html = '<div class="leaderboard"><div class="leaderboard-title">🏆 TOP 10 🏆</div>';
+
+            if (leaderboard.length === 0) {
+                html += '<div class="leaderboard-entry">¡Sin puntuaciones aún!</div>';
+            } else {
+                leaderboard.forEach((entry, index) => {
+                    html += `<div class="leaderboard-entry">${index + 1}. ${entry.name}: ${entry.score}</div>`;
+                });
+            }
+
+            html += '</div>';
+            document.getElementById('leaderboardDisplay').innerHTML = html;
+        }
+
+        const levels = [
+            {
+                platforms: [
+                    {x: 0, y: canvas.height - 40, width: 3500, height: 40},
+                    {x: 300, y: canvas.height - 180, width: 150, height: 20},
+                    {x: 550, y: canvas.height - 250, width: 150, height: 20},
+                    {x: 800, y: canvas.height - 180, width: 200, height: 20},
+                    {x: 1150, y: canvas.height - 300, width: 100, height: 20},
+                    {x: 1350, y: canvas.height - 200, width: 150, height: 20},
+                    {x: 1650, y: canvas.height - 280, width: 180, height: 20},
+                    {x: 2050, y: canvas.height - 220, width: 150, height: 20},
+                    {x: 2350, y: canvas.height - 300, width: 200, height: 20},
+                    {x: 2750, y: canvas.height - 200, width: 250, height: 20},
+                    {x: 3200, y: canvas.height - 180, width: 300, height: 40},
+                ],
+                coins: [
+                    {x: 300, y: canvas.height - 220, collected: false},
+                    {x: 550, y: canvas.height - 310, collected: false},
+                    {x: 800, y: canvas.height - 240, collected: false},
+                    {x: 1150, y: canvas.height - 360, collected: false},
+                    {x: 1350, y: canvas.height - 260, collected: false},
+                    {x: 1650, y: canvas.height - 340, collected: false},
+                    {x: 2050, y: canvas.height - 280, collected: false},
+                    {x: 2350, y: canvas.height - 360, collected: false},
+                    {x: 2750, y: canvas.height - 260, collected: false},
+                    {x: 3000, y: canvas.height - 260, collected: false},
+                    {x: 3200, y: canvas.height - 240, collected: false},
+                ],
+                enemies: [
+                    {x: 800, y: canvas.height - 90, width: 30, height: 30, direction: 1, speed: 0.8},
+                    {x: 1600, y: canvas.height - 90, width: 30, height: 30, direction: -1, speed: 0.8},
+                    {x: 2400, y: canvas.height - 90, width: 30, height: 30, direction: 1, speed: 0.9},
+                ],
+                powerups: [
+                    {x: 900, y: canvas.height - 240, type: 'mushroom', collected: false},
+                    {x: 1500, y: canvas.height - 340, type: 'flower', collected: false},
+                ],
+                castle: {x: 3200, y: canvas.height - 200}
+            },
+            {
+                platforms: [
+                    {x: 0, y: canvas.height - 40, width: 4000, height: 40},
+                    {x: 200, y: canvas.height - 150, width: 100, height: 20},
+                    {x: 450, y: canvas.height - 220, width: 100, height: 20},
+                    {x: 700, y: canvas.height - 280, width: 100, height: 20},
+                    {x: 950, y: canvas.height - 320, width: 80, height: 20},
+                    {x: 1150, y: canvas.height - 350, width: 80, height: 20},
+                    {x: 1350, y: canvas.height - 320, width: 100, height: 20},
+                    {x: 1600, y: canvas.height - 280, width: 120, height: 20},
+                    {x: 1900, y: canvas.height - 220, width: 150, height: 20},
+                    {x: 2250, y: canvas.height - 300, width: 100, height: 20},
+                    {x: 2450, y: canvas.height - 200, width: 100, height: 20},
+                    {x: 2700, y: canvas.height - 280, width: 120, height: 20},
+                    {x: 3000, y: canvas.height - 220, width: 150, height: 20},
+                    {x: 3350, y: canvas.height - 180, width: 200, height: 40},
+                ],
+                coins: [
+                    {x: 200, y: canvas.height - 210, collected: false},
+                    {x: 450, y: canvas.height - 280, collected: false},
+                    {x: 700, y: canvas.height - 340, collected: false},
+                    {x: 950, y: canvas.height - 380, collected: false},
+                    {x: 1150, y: canvas.height - 410, collected: false},
+                    {x: 1350, y: canvas.height - 380, collected: false},
+                    {x: 1600, y: canvas.height - 340, collected: false},
+                    {x: 1900, y: canvas.height - 280, collected: false},
+                    {x: 2250, y: canvas.height - 360, collected: false},
+                    {x: 2450, y: canvas.height - 260, collected: false},
+                    {x: 2700, y: canvas.height - 340, collected: false},
+                    {x: 3000, y: canvas.height - 280, collected: false},
+                ],
+                enemies: [
+                    {x: 500, y: canvas.height - 90, width: 30, height: 30, direction: 1, speed: 1.3},
+                    {x: 1000, y: canvas.height - 90, width: 30, height: 30, direction: -1, speed: 1.3},
+                    {x: 1700, y: canvas.height - 90, width: 30, height: 30, direction: 1, speed: 1.5},
+                    {x: 2300, y: canvas.height - 90, width: 30, height: 30, direction: -1, speed: 1.3},
+                    {x: 2900, y: canvas.height - 90, width: 30, height: 30, direction: 1, speed: 1.3},
+                ],
+                powerups: [
+                    {x: 600, y: canvas.height - 280, type: 'flower', collected: false},
+                    {x: 1100, y: canvas.height - 410, type: 'star', collected: false},
+                    {x: 2000, y: canvas.height - 280, type: 'mushroom', collected: false},
+                ],
+                castle: {x: 3350, y: canvas.height - 200}
+            },
+            {
+                platforms: [
+                    {x: 0, y: canvas.height - 40, width: 4500, height: 40},
+                    {x: 200, y: canvas.height - 120, width: 120, height: 20},
+                    {x: 450, y: canvas.height - 180, width: 120, height: 20},
+                    {x: 700, y: canvas.height - 240, width: 100, height: 20},
+                    {x: 950, y: canvas.height - 280, width: 80, height: 20},
+                    {x: 1150, y: canvas.height - 320, width: 80, height: 20},
+                    {x: 1350, y: canvas.height - 360, width: 80, height: 20},
+                    {x: 1600, y: canvas.height - 340, width: 100, height: 20},
+                    {x: 1900, y: canvas.height - 280, width: 120, height: 20},
+                    {x: 2250, y: canvas.height - 220, width: 150, height: 20},
+                    {x: 2600, y: canvas.height - 300, width: 100, height: 20},
+                    {x: 2850, y: canvas.height - 200, width: 120, height: 20},
+                    {x: 3150, y: canvas.height - 280, width: 100, height: 20},
+                    {x: 3400, y: canvas.height - 180, width: 150, height: 40},
+                ],
+                coins: [
+                    {x: 200, y: canvas.height - 180, collected: false},
+                    {x: 450, y: canvas.height - 240, collected: false},
+                    {x: 700, y: canvas.height - 300, collected: false},
+                    {x: 950, y: canvas.height - 340, collected: false},
+                    {x: 1150, y: canvas.height - 380, collected: false},
+                    {x: 1350, y: canvas.height - 420, collected: false},
+                    {x: 1600, y: canvas.height - 400, collected: false},
+                    {x: 1900, y: canvas.height - 340, collected: false},
+                    {x: 2250, y: canvas.height - 280, collected: false},
+                    {x: 2600, y: canvas.height - 360, collected: false},
+                    {x: 2850, y: canvas.height - 260, collected: false},
+                    {x: 3150, y: canvas.height - 340, collected: false},
+                ],
+                enemies: [
+                    {x: 400, y: canvas.height - 90, width: 30, height: 30, direction: 1, speed: 1.5},
+                    {x: 900, y: canvas.height - 90, width: 30, height: 30, direction: -1, speed: 1.4},
+                    {x: 1600, y: canvas.height - 90, width: 30, height: 30, direction: 1, speed: 1.6},
+                    {x: 2200, y: canvas.height - 90, width: 30, height: 30, direction: -1, speed: 1.5},
+                    {x: 2900, y: canvas.height - 90, width: 30, height: 30, direction: 1, speed: 1.5},
+                    {x: 3300, y: canvas.height - 90, width: 30, height: 30, direction: -1, speed: 1.4},
+                ],
+                powerups: [
+                    {x: 700, y: canvas.height - 300, type: 'star', collected: false},
+                    {x: 1300, y: canvas.height - 420, type: 'flower', collected: false},
+                    {x: 2000, y: canvas.height - 340, type: 'star', collected: false},
+                ],
+                boss: {x: 3000, y: canvas.height - 120, health: 4, maxHealth: 4, direction: 1},
+                castle: {x: 3400, y: canvas.height - 200}
+            }
+        ];
+
+        let currentLevelData = levels[0];
+        let platforms = [];
+        let coins = [];
+        let enemies = [];
+        let powerups = [];
+        let boss = null;
+
+        function loadLevel(levelIndex) {
+            currentLevel = levelIndex + 1;
+            currentLevelData = levels[levelIndex];
+            platforms = JSON.parse(JSON.stringify(currentLevelData.platforms));
+            coins = JSON.parse(JSON.stringify(currentLevelData.coins));
+            enemies = JSON.parse(JSON.stringify(currentLevelData.enemies));
+            powerups = JSON.parse(JSON.stringify(currentLevelData.powerups));
+            boss = currentLevelData.boss ? JSON.parse(JSON.stringify(currentLevelData.boss)) : null;
+
+            player.x = 50;
+            player.y = canvas.height - 100;
+            player.velocityY = 0;
+            player.velocityX = MOVE_SPEED;
+            player.invincible = false;
+            player.powerUp = null;
+
+            score = 0;
+            collectedCoins = 0;
+            lives = 3;
+            timeLeft = 300;
+
+            levelStartTime = Date.now();
+        }
+
+        function startGame() {
+            const nameInput = document.getElementById('playerNameInput').value;
+            playerName = nameInput.trim() || 'Jugador';
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('leaderboardDisplay').innerHTML = '';
+            loadLevel(0);
+            gameState = STATE.LEVEL_INTRO;
+            showLevelIntro();
+        }
+
+        function showLevelIntro() {
+            gameState = STATE.LEVEL_INTRO;
+            document.getElementById('levelScreen').style.display = 'flex';
+            document.getElementById('levelScreenNum').textContent = currentLevel;
+            document.getElementById('levelScreenText').textContent = currentLevel === 3 ? '¡COMBATE FINAL!' : `Nivel ${currentLevel} - ¡A por los anillos!`;
+        }
+
+        function continueLevelCountdown() {
+            document.getElementById('levelScreen').style.display = 'none';
+            gameState = STATE.PLAYING;
+        }
+
+        function nextLevel() {
+            if (currentLevel < levels.length) {
+                document.getElementById('winScreen').style.display = 'none';
+                loadLevel(currentLevel);
+                gameState = STATE.LEVEL_INTRO;
+                showLevelIntro();
+            } else {
+                showFinalWin();
+            }
+        }
+
+        function restartGame() {
+            document.getElementById('gameOverScreen').style.display = 'none';
+            loadLevel(currentLevel - 1);
+            gameState = STATE.LEVEL_INTRO;
+            showLevelIntro();
+        }
+
+        function goToStart() {
+            document.getElementById('gameOverScreen').style.display = 'none';
+            document.getElementById('winScreen').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'flex';
+            gameState = STATE.START;
+            score = 0;
+            lives = 3;
+        }
+
+        function showGameOver() {
+            gameState = STATE.GAME_OVER;
+            document.getElementById('gameOverScreen').style.display = 'flex';
+        }
+
+        function showLevelComplete() {
+            gameState = STATE.LEVEL_COMPLETE;
+            document.getElementById('winScreen').style.display = 'flex';
+            document.getElementById('winText').textContent = `¡Nivel ${currentLevel} completado! Anillos: ${collectedCoins}`;
+        }
+
+        function showFinalWin() {
+            const finalScore = score + collectedCoins * 100;
+            saveScore(playerName, finalScore);
+
+            gameState = STATE.WIN;
+            document.getElementById('winScreen').style.display = 'flex';
+
+            const leaderboard = getLeaderboard();
+            const playerRank = leaderboard.findIndex(entry => entry.name === playerName && entry.score === finalScore) + 1;
+
+            let leaderboardHtml = '<div class="leaderboard" style="margin-top: 20px;"><div class="leaderboard-title">🏆 TOP 5 🏆</div>';
+            for (let i = 0; i < Math.min(5, leaderboard.length); i++) {
+                const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '  ';
+                leaderboardHtml += `<div class="leaderboard-entry">${medal} ${i + 1}. ${leaderboard[i].name}: ${leaderboard[i].score}</div>`;
+            }
+            leaderboardHtml += '</div>';
+
+            document.getElementById('winText').innerHTML = `<div>¡FELICIDADES!</div><div>¡Elena y Miquel llegaron al altar!</div><div>¡Que comience la boda! 💍</div><div>Score Final: ${finalScore}</div><div style="color: #FFD700; font-size: 16px; margin-top: 10px;">Tu posición: #${playerRank}</div>${leaderboardHtml}`;
+
+            // Ocultar botón siguiente nivel, mostrar solo menú
+            const winButtons = document.querySelectorAll('#winScreen .screen-button');
+            if (winButtons[0]) winButtons[0].style.display = 'none';
+            if (winButtons[1]) winButtons[1].style.display = 'block';
+
+            // Fuegos artificiales
+            createFireworks();
+        }
+
+        function createFireworks() {
+            for (let i = 0; i < 50; i++) {
+                const angle = (Math.random() * Math.PI * 2);
+                const speed = 3 + Math.random() * 4;
+                fireworks.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    velocityX: Math.cos(angle) * speed,
+                    velocityY: Math.sin(angle) * speed,
+                    life: 100,
+                    maxLife: 100,
+                    color: ['#FF69B4', '#FFD700', '#FF1493', '#FFB6C1'][Math.floor(Math.random() * 4)]
+                });
+            }
+        }
+
+        let touchActive = false;
+
+        document.addEventListener('touchstart', (e) => {
+            if (gameState === STATE.PLAYING) {
+                touchActive = true;
+                if (!player.jumping) {
+                    player.velocityY = -JUMP_POWER;
+                    player.jumping = true;
+                } else if (!player.doubleJump) {
+                    player.velocityY = -JUMP_POWER;
+                    player.doubleJump = true;
+                }
+            }
+        });
+
+        document.addEventListener('touchend', () => {
+            touchActive = false;
+        });
+
+        function update() {
+            if (gameState !== STATE.PLAYING) return;
+
+            timeLeft = Math.max(0, 300 - Math.floor((Date.now() - levelStartTime) / 1000));
+            if (timeLeft === 0) {
+                lives--;
+                if (lives <= 0) {
+                    showGameOver();
+                } else {
+                    loadLevel(currentLevel - 1);
+                    gameState = STATE.LEVEL_INTRO;
+                    showLevelIntro();
+                }
+                return;
+            }
+
+            player.velocityY += GRAVITY;
+            if (player.velocityY > MAX_FALL_SPEED) player.velocityY = MAX_FALL_SPEED;
+
+            player.x += player.velocityX;
+            player.y += player.velocityY;
+            player.animationFrame += 0.1;
+
+            let onGround = false;
+            for (let p of platforms) {
+                if (player.y + player.height >= p.y &&
+                    player.y + player.height <= p.y + p.height + 15 &&
+                    player.x + player.width > p.x &&
+                    player.x < p.x + p.width) {
+                    player.velocityY = 0;
+                    player.y = p.y - player.height;
+                    player.jumping = false;
+                    player.doubleJump = false;
+                    onGround = true;
+                }
+            }
+
+            for (let c of coins) {
+                if (!c.collected &&
+                    Math.hypot(player.x - c.x, player.y - c.y) < 30) {
+                    c.collected = true;
+                    collectedCoins++;
+                    score += 200;
+                    createConfetti(c.x, c.y);
+                }
+            }
+
+            for (let pu of powerups) {
+                if (!pu.collected &&
+                    Math.hypot(player.x - pu.x, player.y - pu.y) < 30) {
+                    pu.collected = true;
+                    player.powerUp = pu.type;
+                    player.powerUpTime = 300;
+
+                    if (pu.type === 'star') {
+                        player.invincible = true;
+                        player.invincibleTime = 300;
+                    }
+                }
+            }
+
+            for (let e of enemies) {
+                if (Math.hypot(player.x - e.x, player.y - e.y) < 40) {
+                    if (player.invincible) {
+                        e.x = -1000;
+                    } else {
+                        lives--;
+                        if (lives <= 0) {
+                            showGameOver();
+                        } else {
+                            player.x = 50;
+                            player.y = canvas.height - 100;
+                            player.velocityY = 0;
+                            player.powerUp = null;
+                        }
+                    }
+                }
+            }
+
+            // Boss AI
+            if (boss && boss.health > 0) {
+                boss.x += boss.direction * 1.5;
+                if (boss.x < 2800 || boss.x > 3200) {
+                    boss.direction *= -1;
+                }
+
+                if (Math.hypot(player.x - boss.x, player.y - boss.y) < 50) {
+                    if (player.invincible) {
+                        boss.health--;
+                        createConfetti(boss.x, boss.y);
+                    } else {
+                        lives--;
+                        if (lives <= 0) {
+                            showGameOver();
+                        } else {
+                            player.x = 50;
+                            player.y = canvas.height - 100;
+                            player.velocityY = 0;
+                        }
+                    }
+                }
+            }
+
+            if (player.powerUp) {
+                player.powerUpTime--;
+                if (player.powerUpTime <= 0) {
+                    player.powerUp = null;
+                }
+            }
+
+            if (player.invincible) {
+                player.invincibleTime--;
+                if (player.invincibleTime <= 0) {
+                    player.invincible = false;
+                }
+            }
+
+            for (let e of enemies) {
+                e.x += e.direction * e.speed;
+                if (e.x < 0 || e.x > 4500) {
+                    e.direction *= -1;
+                }
+            }
+
+            camera.targetX = player.x - canvas.width / 4;
+            camera.targetY = Math.max(0, player.y - canvas.height / 2);
+
+            camera.x += (camera.targetX - camera.x) * 0.1;
+            camera.y += (camera.targetY - camera.y) * 0.1;
+
+            if (boss && boss.health <= 0 && player.x > currentLevelData.castle.x - 100) {
+                showLevelComplete();
+            } else if (!boss && player.x > currentLevelData.castle.x) {
+                showLevelComplete();
+            }
+
+            if (player.y > canvas.height + 100) {
+                lives--;
+                if (lives <= 0) {
+                    showGameOver();
+                } else {
+                    player.x = 50;
+                    player.y = canvas.height - 100;
+                    player.velocityY = 0;
+                }
+            }
+        }
+
+        function draw() {
+            ctx.fillStyle = '#87CEEB';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            const cloudY = 50 - (camera.y * 0.2);
+            ctx.fillRect((100 - camera.x * 0.5) % 400, cloudY, 80, 40);
+            ctx.fillRect((500 - camera.x * 0.5) % 600, cloudY, 80, 40);
+            ctx.fillRect((900 - camera.x * 0.5) % 700, cloudY, 80, 40);
+
+            ctx.save();
+            ctx.translate(-camera.x, -camera.y);
+
+            for (let p of platforms) {
+                drawPlatform(p);
+            }
+
+            for (let c of coins) {
+                if (!c.collected) {
+                    drawRing(c);
+                }
+            }
+
+            for (let pu of powerups) {
+                if (!pu.collected) {
+                    drawPowerUp(pu);
+                }
+            }
+
+            for (let e of enemies) {
+                if (e.x > -50) {
+                    drawEnemy(e);
+                }
+            }
+
+            if (boss && boss.health > 0) {
+                drawBoss(boss);
+            }
+
+            drawPlayer();
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.velocityX;
+                p.y += p.velocityY;
+                p.velocityY += 0.3;
+                p.life--;
+
+                ctx.fillStyle = `rgba(${p.color}, ${p.life / p.maxLife})`;
+                ctx.fillRect(p.x, p.y, 4, 4);
+
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+
+            drawCastle(currentLevelData.castle);
+
+            ctx.restore();
+
+            // Draw fireworks
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                let fw = fireworks[i];
+                fw.x += fw.velocityX;
+                fw.y += fw.velocityY;
+                fw.velocityY += 0.2;
+                fw.life--;
+
+                ctx.fillStyle = fw.color;
+                ctx.globalAlpha = fw.life / fw.maxLife;
+                ctx.beginPath();
+                ctx.arc(fw.x, fw.y, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+
+                if (fw.life <= 0) {
+                    fireworks.splice(i, 1);
+                }
+            }
+
+            updateUI();
+        }
+
+        function drawPlatform(p) {
+            ctx.fillStyle = '#8B7355';
+            ctx.fillRect(p.x, p.y, p.width, p.height);
+
+            ctx.fillStyle = '#D2B48C';
+            ctx.fillRect(p.x, p.y, p.width, p.height * 0.4);
+
+            ctx.fillStyle = '#A0826D';
+            ctx.fillRect(p.x, p.y + p.height * 0.6, p.width, p.height * 0.4);
+
+            if (p.height >= 40) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                for (let i = 0; i < p.width; i += 20) {
+                    ctx.fillRect(p.x + i, p.y, 10, p.height);
+                }
+            }
+        }
+
+        function drawRing(c) {
+            ctx.strokeStyle = '#FFD700';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(c.x, c.y, 8, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.fillStyle = '#FF69B4';
+            ctx.fillRect(c.x - 3, c.y - 3, 6, 6);
+        }
+
+        function drawPowerUp(pu) {
+            if (pu.type === 'mushroom') {
+                ctx.fillStyle = '#FF0000';
+                ctx.fillRect(pu.x - 10, pu.y - 15, 20, 12);
+                ctx.fillStyle = '#FFD700';
+                ctx.fillRect(pu.x - 8, pu.y - 17, 4, 2);
+                ctx.fillRect(pu.x + 4, pu.y - 17, 4, 2);
+                ctx.fillStyle = '#8B4513';
+                ctx.fillRect(pu.x - 6, pu.y - 3, 12, 8);
+            } else if (pu.type === 'flower') {
+                ctx.fillStyle = '#FF4500';
+                ctx.beginPath();
+                ctx.arc(pu.x, pu.y - 5, 6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#FFD700';
+                ctx.beginPath();
+                ctx.arc(pu.x - 6, pu.y - 10, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(pu.x + 6, pu.y - 10, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#228B22';
+                ctx.fillRect(pu.x - 4, pu.y + 5, 8, 8);
+            } else if (pu.type === 'star') {
+                drawStar(pu.x, pu.y, 12, 5, 5);
+            }
+        }
+
+        function drawStar(x, y, radius, points, innerRadius) {
+            let step = Math.PI / points;
+            ctx.fillStyle = '#FFA500';
+            ctx.beginPath();
+            for (let i = 0; i < points * 2; i++) {
+                let r = i % 2 === 0 ? radius : innerRadius;
+                let angle = i * step - Math.PI / 2;
+                let px = x + r * Math.cos(angle);
+                let py = y + r * Math.sin(angle);
+                if (i === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function drawPlayer() {
+            const animFrame = Math.floor(player.animationFrame) % 4;
+            const bounce = Math.sin(player.animationFrame * Math.PI) * 2;
+
+            // Body
+            ctx.fillStyle = '#FF0000';
+            ctx.fillRect(player.x - 12, player.y + 10 + bounce, 24, 20);
+
+            // Heads
+            ctx.fillStyle = '#FFDBAC';
+            ctx.beginPath();
+            ctx.arc(player.x - 8, player.y - 5 + bounce, 7, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(player.x + 8, player.y - 5 + bounce, 7, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Eyes (animated)
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(player.x - 11, player.y - 8 + bounce, 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(player.x + 5, player.y - 8 + bounce, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Hearts between heads (romance indicator)
+            ctx.fillStyle = '#FF69B4';
+            ctx.beginPath();
+            ctx.arc(player.x, player.y - 15 + bounce, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Hat
+            ctx.fillStyle = '#FF0000';
+            ctx.fillRect(player.x - 14, player.y - 15 + bounce, 16, 8);
+            ctx.fillStyle = '#FFD700';
+            ctx.fillRect(player.x + 2, player.y - 15 + bounce, 12, 8);
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.arc(player.x - 14, player.y - 12 + bounce, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Legs
+            ctx.fillStyle = '#4169E1';
+            ctx.fillRect(player.x - 10, player.y + 30 + bounce, 6, 12);
+            ctx.fillRect(player.x + 4, player.y + 30 + bounce, 6, 12);
+
+            // Shoes
+            ctx.fillStyle = '#000';
+            ctx.fillRect(player.x - 10, player.y + 42 + bounce, 8, 4);
+            ctx.fillRect(player.x + 4, player.y + 42 + bounce, 8, 4);
+
+            if (player.invincible) {
+                ctx.strokeStyle = `rgba(255, 255, 0, ${0.5 + Math.sin(Date.now() / 100) * 0.3})`;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(player.x, player.y + 15, 30, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        }
+
+        function drawEnemy(e) {
+            ctx.fillStyle = '#8B4513';
+            ctx.beginPath();
+            ctx.arc(e.x, e.y - 5, 12, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#A0522D';
+            ctx.fillRect(e.x - 12, e.y, 24, 15);
+
+            ctx.fillStyle = '#FFF';
+            ctx.fillRect(e.x - 6, e.y - 8, 4, 4);
+            ctx.fillRect(e.x + 2, e.y - 8, 4, 4);
+            ctx.fillStyle = '#000';
+            ctx.fillRect(e.x - 5, e.y - 7, 2, 2);
+            ctx.fillRect(e.x + 3, e.y - 7, 2, 2);
+
+            ctx.fillStyle = '#000';
+            ctx.fillRect(e.x - 10, e.y + 15, 6, 4);
+            ctx.fillRect(e.x + 4, e.y + 15, 6, 4);
+        }
+
+        function drawBoss(b) {
+            // Boss Bowser-like
+            ctx.fillStyle = '#228B22';
+            ctx.fillRect(b.x - 25, b.y - 20, 50, 40);
+
+            // Head
+            ctx.fillStyle = '#228B22';
+            ctx.beginPath();
+            ctx.arc(b.x, b.y - 35, 15, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Eyes
+            ctx.fillStyle = '#FFF';
+            ctx.fillRect(b.x - 8, b.y - 38, 5, 5);
+            ctx.fillRect(b.x + 3, b.y - 38, 5, 5);
+            ctx.fillStyle = '#000';
+            ctx.fillRect(b.x - 7, b.y - 37, 3, 3);
+            ctx.fillRect(b.x + 4, b.y - 37, 3, 3);
+
+            // Crown/Horns
+            ctx.fillStyle = '#FFD700';
+            ctx.fillRect(b.x - 12, b.y - 48, 8, 10);
+            ctx.fillRect(b.x + 4, b.y - 48, 8, 10);
+
+            // Health bar
+            ctx.fillStyle = '#FF0000';
+            ctx.fillRect(b.x - 20, b.y - 55, 40, 5);
+            ctx.fillStyle = '#00FF00';
+            ctx.fillRect(b.x - 20, b.y - 55, (b.health / b.maxHealth) * 40, 5);
+        }
+
+        function drawCastle(castle) {
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(castle.x - 60, castle.y - 20, 120, 25);
+            ctx.fillStyle = '#D2B48C';
+            ctx.fillRect(castle.x - 60, castle.y - 20, 120, 8);
+
+            ctx.fillStyle = '#FFB6C1';
+            ctx.beginPath();
+            ctx.arc(castle.x - 35, castle.y - 100, 50, -Math.PI, 0);
+            ctx.fill();
+            ctx.strokeStyle = '#FF69B4';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            ctx.fillStyle = '#FFB6C1';
+            ctx.beginPath();
+            ctx.arc(castle.x + 35, castle.y - 100, 50, 0, Math.PI);
+            ctx.fill();
+            ctx.strokeStyle = '#FF69B4';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            ctx.fillStyle = '#FFB6C1';
+            ctx.beginPath();
+            ctx.arc(castle.x, castle.y - 85, 45, 0, Math.PI);
+            ctx.fill();
+            ctx.strokeStyle = '#FF69B4';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            for (let i = 0; i < 5; i++) {
+                ctx.fillStyle = '#FF1493';
+                ctx.beginPath();
+                ctx.arc(castle.x - 40 + i * 8, castle.y - 110, 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            for (let i = 0; i < 5; i++) {
+                ctx.fillStyle = '#FF1493';
+                ctx.beginPath();
+                ctx.arc(castle.x + 40 - i * 8, castle.y - 110, 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.fillStyle = '#8B7355';
+            ctx.fillRect(castle.x - 50, castle.y - 60, 8, 50);
+            ctx.fillStyle = '#FFD700';
+            ctx.fillRect(castle.x - 48, castle.y - 70, 4, 10);
+            ctx.fillStyle = '#FFA500';
+            ctx.beginPath();
+            ctx.arc(castle.x - 46, castle.y - 72, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#8B7355';
+            ctx.fillRect(castle.x + 42, castle.y - 60, 8, 50);
+            ctx.fillStyle = '#FFD700';
+            ctx.fillRect(castle.x + 44, castle.y - 70, 4, 10);
+            ctx.fillStyle = '#FFA500';
+            ctx.beginPath();
+            ctx.arc(castle.x + 46, castle.y - 72, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#F5F5DC';
+            ctx.fillRect(castle.x - 20, castle.y - 50, 10, 50);
+            ctx.fillRect(castle.x + 10, castle.y - 50, 10, 50);
+
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(castle.x - 15, castle.y - 30, 30, 20);
+            ctx.fillStyle = '#D2B48C';
+            ctx.fillRect(castle.x - 15, castle.y - 30, 30, 5);
+
+            ctx.strokeStyle = '#FFD700';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(castle.x, castle.y - 40);
+            ctx.lineTo(castle.x, castle.y - 20);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(castle.x - 5, castle.y - 32);
+            ctx.lineTo(castle.x + 5, castle.y - 32);
+            ctx.stroke();
+
+            for (let i = -2; i <= 2; i++) {
+                ctx.fillStyle = '#FF69B4';
+                ctx.beginPath();
+                ctx.arc(castle.x + i * 15, castle.y - 25, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function createConfetti(x, y) {
+            for (let i = 0; i < 12; i++) {
+                const angle = (i / 12) * Math.PI * 2;
+                const colors = ['255, 215, 0', '255, 105, 180', '255, 192, 203'];
+                particles.push({
+                    x: x,
+                    y: y,
+                    velocityX: Math.cos(angle) * 3,
+                    velocityY: Math.sin(angle) * 3,
+                    life: 40,
+                    maxLife: 40,
+                    color: colors[Math.floor(Math.random() * colors.length)]
+                });
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('score').textContent = score + (collectedCoins * 100);
+            document.getElementById('coins').textContent = collectedCoins;
+            document.getElementById('lives').textContent = lives;
+            document.getElementById('time').textContent = Math.max(0, timeLeft);
+            document.getElementById('levelNum').textContent = currentLevel;
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        loadLevel(0);
+        gameLoop();
+    </script>
+</body>
+</html>

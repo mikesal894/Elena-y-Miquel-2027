@@ -734,6 +734,131 @@
                 font-size: 12px;
             }
         }
+
+        /* FLOATING GAME BUTTON */
+        #floatingGameBtn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: #FF69B4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(255, 105, 180, 0.4);
+            z-index: 999;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+        }
+
+        #floatingGameBtn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(255, 105, 180, 0.6);
+        }
+
+        #floatingGameBtn:active {
+            transform: scale(0.95);
+        }
+
+        /* GAME MODAL */
+        #gameModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 10px;
+            width: 95%;
+            max-width: 1200px;
+            height: 90%;
+            max-height: 800px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
+            color: white;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        #closeGameBtn {
+            background: rgba(255,255,255,0.3);
+            border: 2px solid white;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        #closeGameBtn:hover {
+            background: rgba(255,255,255,0.5);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow: auto;
+        }
+
+        #gameContainer {
+            width: 100%;
+            height: 100%;
+        }
+
+        @media (max-width: 768px) {
+            #floatingGameBtn {
+                width: 60px;
+                height: 60px;
+                font-size: 28px;
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .modal-content {
+                width: 98%;
+                height: 95%;
+                max-width: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1273,5 +1398,65 @@
             toggle.classList.toggle('active');
         }
     </script>
+
+    <!-- FLOATING GAME BUTTON -->
+    <button id="floatingGameBtn" title="Jugar">🎮</button>
+
+    <!-- GAME MODAL -->
+    <div id="gameModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🎮 Super Mario Boda Ultimate</h2>
+                <button id="closeGameBtn">✕</button>
+            </div>
+            <div class="modal-body">
+                <div id="gameContainer"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Game Modal Handler
+        const floatingGameBtn = document.getElementById('floatingGameBtn');
+        const gameModal = document.getElementById('gameModal');
+        const closeGameBtn = document.getElementById('closeGameBtn');
+        const gameContainer = document.getElementById('gameContainer');
+
+        // Cargar el juego (será un iframe o contenedor)
+        floatingGameBtn.addEventListener('click', function() {
+            gameModal.style.display = 'block';
+            
+            // Si el contenedor está vacío, cargar el juego
+            if (gameContainer.innerHTML === '') {
+                // Crear iframe para el juego
+                const iframe = document.createElement('iframe');
+                iframe.src = 'super-mario-boda-ultimate-2.html';
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.style.border = 'none';
+                iframe.style.borderRadius = '0 0 10px 10px';
+                gameContainer.appendChild(iframe);
+            }
+        });
+
+        closeGameBtn.addEventListener('click', function() {
+            gameModal.style.display = 'none';
+        });
+
+        // Cerrar modal al hacer clic fuera
+        gameModal.addEventListener('click', function(e) {
+            if (e.target === gameModal) {
+                gameModal.style.display = 'none';
+            }
+        });
+
+        // Cerrar con tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && gameModal.style.display === 'block') {
+                gameModal.style.display = 'none';
+            }
+        });
+    </script>
+
 </body>
-</html>
